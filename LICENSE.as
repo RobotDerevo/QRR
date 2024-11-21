@@ -5,6 +5,7 @@
 // =ALL RIGHTS RESERVED © 2024 QuantalJ aka (StonesRabbit)=
 // =Content without copyright, has the comment "Can be used for other purposes"
 // =DEVELOPERS=
+// = Markoss
 // =loku
 // =QuantalJ
 // Disclaimer
