@@ -31,18 +31,52 @@ void onInit(CSprite@ this)
 	CSpriteLayer@ leftarm = this.addSpriteLayer("arml", "Human_Arms.png", 32, 32);
 	CSpriteLayer@ leftleg = this.addSpriteLayer("legl", "Human_Legs.png", 32, 32);
 	CSpriteLayer@ rightleg = this.addSpriteLayer("legr", "Human_Legs.png", 32, 32);
-	leftleg.SetFrameIndex(0);
-	rightleg.SetFrameIndex(7);
-	rightarm.SetFrameIndex(1);
-	leftarm.SetFrameIndex(0);
-	rightarm.SetOffset(ar);
-	leftarm.SetOffset(al);
-	leftleg.SetOffset(ll);
-	rightleg.SetOffset(lr);
-	rightarm.SetRelativeZ(-1.0f);
-	leftarm.SetRelativeZ(1.0f);
-	leftleg.SetRelativeZ(0.22f);
-	rightleg.SetRelativeZ(0.22f);
+
+	if(leftleg !is null)
+	{
+		Animation@ def = leftleg.addAnimation("default", 0, false);
+		def.AddFrame(0);
+		Animation@ run = leftleg.addAnimation("run", 3, true);
+		run.AddFrame(1);
+		run.AddFrame(2);
+		run.AddFrame(3);
+		run.AddFrame(4);
+
+		leftleg.SetOffset(ll);
+		leftleg.SetRelativeZ(0.22f);
+	}
+
+	if(rightleg !is null)
+	{
+		Animation@ def = rightleg.addAnimation("default", 0, false);
+		def.AddFrame(7);
+		Animation@ run = rightleg.addAnimation("run", 3, true);
+		run.AddFrame(8);
+		run.AddFrame(9);
+		run.AddFrame(10);
+		run.AddFrame(11);
+
+		rightleg.SetOffset(lr);
+		rightleg.SetRelativeZ(0.22f);
+	}
+
+	if(rightarm !is null)
+	{
+		Animation@ def = rightarm.addAnimation("default", 0, false);
+		def.AddFrame(1);
+
+		rightarm.SetOffset(ar);
+		rightarm.SetRelativeZ(-1.0f);
+	}
+
+	if(leftarm !is null)
+	{
+		Animation@ def = leftarm.addAnimation("default", 0, false);
+		def.AddFrame(0);
+
+		leftarm.SetOffset(al);
+		leftarm.SetRelativeZ(0.22f);
+	}
 }
 
 void onPlayerInfoChanged(CSprite@ this)
@@ -85,8 +119,37 @@ void LoadSprites(CSprite@ this)
 
 void onTick(CSprite@ this)
 {
+	CBlob@ blob = this.getBlob();
 	CSpriteLayer@ leftarm = this.getSpriteLayer("arml");
 	CSpriteLayer@ rightarm = this.getSpriteLayer("armr");
+	CSpriteLayer@ leftleg = this.getSpriteLayer("legl");
+	CSpriteLayer@ rightleg = this.getSpriteLayer("legr");
+
+	bool left = blob.isKeyPressed(key_left);
+	bool right = blob.isKeyPressed(key_right);
+	bool up = blob.isKeyPressed(key_up);
+	bool down = blob.isKeyPressed(key_down);
+
+	RunnerMoveVars@ moveVars;
+	if (!blob.get("moveVars", @moveVars))
+	{
+		return;
+	}
+
+	if (left || right)
+	{
+		rightleg.getAnimation("run").time = 3.0f/Maths::Max(moveVars.walkFactor,0.01f);
+		rightleg.SetAnimation("run");
+		leftleg.getAnimation("run").time = 3.0f/Maths::Max(moveVars.walkFactor,0.01f);
+		leftleg.SetAnimation("run");
+	}
+	else
+	{
+		rightleg.getAnimation("default");
+		rightleg.SetAnimation("default");
+		leftleg.getAnimation("default");
+		leftleg.SetAnimation("default");
+	}
 	if (this.isFacingLeft())
 	{
 		angle = -90.0f;
