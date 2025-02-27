@@ -8,18 +8,16 @@
 #include "FireplaceCommon.as";
 #include "Hitters.as";
 
-float fuel = 2.3f;
 void onInit(CBlob@ this)
 {
-	fuel = 4.4f;
 	this.getCurrentScript().tickFrequency = 9;
 	this.getSprite().SetEmitSound("CampfireSound.ogg");
 	this.getSprite().SetEmitSoundPaused(false);
-	this.getSprite().SetAnimation("fire");
+	this.getSprite().SetAnimation("small");
+	this.set_u16("wood", 50);
 	this.getSprite().SetFacingLeft(XORRandom(2) == 0);
 
 	this.SetLight(true);
-	this.SetLightRadius(32.3 * fuel);
 	this.SetLightColor(SColor(255, 255, 240, 171));
 
 	this.Tag("fire source");
@@ -27,25 +25,34 @@ void onInit(CBlob@ this)
 	this.getSprite().SetZ(-20.0f);
 }
 
-void onTick(CBlob@ this)
-{	
-	Ignite(this);
-	this.SetLightRadius(15.5f * fuel);
-	if (this.getSprite().isAnimation("fire"))
-	{
-		makeFireParticle(this.getPosition() + getRandomVelocity(90.0f, 3.0f, 90.0f));
-	}
 
-	if (this.isInWater())
-	{
-		Extinguish(this);
-	}
+void makeLargeSmokeParticle(Vec2f pos, f32 gravity = -0.06f)
+{
+	string texture;
 
-	if (this.isInFlames())
-	{
-		Ignite(this);
-	}
+	texture = "Entities/Effects/Sprites/LargeSmoke.png";
+
+	ParticleAnimated(texture, pos, Vec2f(0, 0), 0.0f, 1.0f, 5, gravity, true);
 }
+
+void onTick(CBlob@ this)
+{
+	CSprite@ sprite = this.getSprite();
+	
+	if(sprite.isAnimation("large"))
+	{
+		makeLargeSmokeParticle(this.getPosition() + getRandomVelocity(90.0f, 3.0f, 90.0f));
+	}
+	else
+	{
+		makeSmokeParticle(this.getPosition() + getRandomVelocity(90.0f, 3.0f, 90.0f));
+	}
+
+	if(this.get_u16("wood") <= 149.0f) sprite.SetAnimation("small");
+	if(this.get_u16("wood") >= 150.0f) sprite.SetAnimation("medium");
+	if(this.get_u16("wood") >= 250.0f) sprite.SetAnimation("large");
+}
+
 
 void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 {	
@@ -67,6 +74,16 @@ void onCollision(CBlob@ this, CBlob@ blob, bool solid)
 	{
 		Ignite(this);
 	}
+	if(blob.getName() == "log")
+	{
+		this.set_u16("wood", 15);
+		blob.server_SetTimeToDie(0.1f);
+	}
+	if(blob.getName() == "mat_wood")
+	{
+		this.set_u16("wood", blob.getQuantity());
+		blob.server_SetTimeToDie(0.1f);
+	}
 }
 
 void onInit(CSprite@ this)
@@ -78,8 +95,19 @@ void onInit(CSprite@ this)
 
 	if (fire !is null)
 	{
+		if(this.isAnimation("small"))
+		{
+			fire.SetOffset(Vec2f(-2.0f, -2.0f));
+		}
+		else if(this.isAnimation("medium"))
+		{
+			fire.SetOffset(Vec2f(-2.0f, -4.0f));
+		}
+		else if(this.isAnimation("large"))
+		{
+			fire.SetOffset(Vec2f(-2.0f, -6.0f));
+		}
 		fire.SetRelativeZ(1);
-		fire.SetOffset(Vec2f(-2.0f, -6.0f));
 		{
 			Animation@ anim = fire.addAnimation("fire", 6, true);
 			anim.AddFrame(1);
@@ -89,35 +117,8 @@ void onInit(CSprite@ this)
 		fire.SetVisible(true);
 	}
 }
-void Extinguish(CBlob@ this)
-{
-	if (this.getSprite().isAnimation("nofire")) return;
-
-	this.SetLight(false);
-	this.Untag("fire source");
-
-	this.getSprite().SetAnimation("nofire");
-	this.getSprite().SetEmitSoundPaused(true);
-	this.getSprite().PlaySound("/ExtinguishFire.ogg");
-	
-	CSpriteLayer@ fire = this.getSprite().getSpriteLayer("fire_animation_large");
-	if (fire !is null)
-	{
-		fire.SetVisible(false);
-	}
-	
-	makeSmokeParticle(this.getPosition()); //*poof*
-}
 
 f32 onHit(CBlob@ this, Vec2f worldPoint, Vec2f velocity, f32 damage, CBlob@ hitterBlob, u8 customData)
 {
-	if (isWaterHitter(customData)) 
-	{
-		Extinguish(this);
-	}
-	else if (isIgniteHitter(customData)) 
-	{
-		Ignite(this);
-	}
 	return damage;
 }
