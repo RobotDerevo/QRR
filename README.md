@@ -1,2 +1,2 @@
-# ql-rp
-ql-rp -  is mod for game named KAG(King arthur's gold)
+# Rafty
+Rafty-  is a roleplay mod in KAG, based on ql-rp
