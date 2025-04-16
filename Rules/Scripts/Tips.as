@@ -1,11 +1,3 @@
-const int[] numbers = {
-    900,
-    9000,
-    300,
-    1800,
-    600,
-    2000
-};
 const string[] good_tips = {
     "Use research shop for get books and basic sciense in game",
     "Use !rules for get rules info and !update for update info",
