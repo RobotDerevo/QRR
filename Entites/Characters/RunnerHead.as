@@ -45,6 +45,7 @@ bool doSkinColour(int packIndex)
 
 int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 {
+	CPlayer@ player = blob.getPlayer();
 	if (headIndex < NUM_UNIQUEHEADS)
 	{
 		return headIndex * NUM_HEADFRAMES;
@@ -62,6 +63,10 @@ int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 		{
 			headIndex = NUM_UNIQUEHEADS + 1;
 		}
+		else if (config == "humanoid")
+		{
+			headIndex = NUM_UNIQUEHEADS;
+		}
 		else if (config == "archer")
 		{
 			headIndex = NUM_UNIQUEHEADS + 2;
@@ -78,9 +83,20 @@ int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 			print("config: " + config);
 		}
 	}
+	
+	int custom_head_ind = LoadCustomHead(blob.getSprite());
 
-	return (((headIndex - NUM_UNIQUEHEADS / 2) * 2) +
-	        (blob.getSexNum() == 0 ? 0 : 1)) * NUM_HEADFRAMES;
+	if(custom_head_ind != 255)
+	{
+		return (((custom_head_ind - NUM_UNIQUEHEADS / 2) * 2) +
+				(blob.getSexNum() == 0 ? 0 : 1)) * NUM_HEADFRAMES;
+	}
+	
+	else
+	{
+		return (((headIndex - NUM_UNIQUEHEADS / 2) * 2) +
+				(blob.getSexNum() == 0 ? 0 : 1)) * NUM_HEADFRAMES;
+	}
 }
 
 string getHeadTexture(int headIndex)
@@ -91,6 +107,22 @@ string getHeadTexture(int headIndex)
 void onPlayerInfoChanged(CSprite@ this)
 {
 	LoadHead(this, this.getBlob().getHeadNum());
+}
+
+int LoadCustomHead(CSprite@ this)
+{
+	CBlob@ blob = this.getBlob();
+	CPlayer@ player = blob.getPlayer();
+
+	if (player !is null && blob !is null)
+	{
+		if (player.getUsername() == "QuantalJ") //QuantalJ head
+		{
+			return 100;
+		}
+	}
+
+	return 255;
 }
 
 CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
@@ -127,7 +159,7 @@ CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
 				texture_file = acc.customHeadTexture;
 				headIndex = acc.customHeadIndex;
 				headsPackIndex = 0;
-				override_frame = true;
+				override_frame = false;
 			}
 			else if (rules.exists(holiday_prop))
 			{

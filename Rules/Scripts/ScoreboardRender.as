@@ -123,8 +123,7 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 	GUI::DrawText(getTranslatedString("Player"), Vec2f(topleft.x, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Username"), Vec2f(bottomright.x - 470, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Ping"), Vec2f(bottomright.x - 330, topleft.y), SColor(0xffffffff));
-	GUI::DrawText(getTranslatedString("Kills"), Vec2f(bottomright.x - 260, topleft.y), SColor(0xffffffff));
-	GUI::DrawText(getTranslatedString("Deaths"), Vec2f(bottomright.x - 190, topleft.y), SColor(0xffffffff));
+	GUI::DrawText(getTranslatedString("Kills|Deaths"), Vec2f(bottomright.x - 260, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Role"), Vec2f(bottomright.x - 120, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Coins"), Vec2f(bottomright.x - 50, topleft.y), SColor(0xffffffff));
 	GUI::DrawText(getTranslatedString("Accolades"), Vec2f(bottomright.x - accolades_start, topleft.y), SColor(0xffffffff));
@@ -534,11 +533,38 @@ float drawScoreboard(CPlayer@ localplayer, CPlayer@[] players, Vec2f topleft, CT
 			}
 		}
 
+		string role;
+		SColor color;
+
+		//const string name = "";
+		int hash = p.getUsername().getHash();
+		//hash = name.getHash();
+		//print("" + hash);
+		if(hash == -1471886607) // QuantalJ
+		{
+			role = "Rafty Creator";
+			color = SColor(0xff1d73af);
+		}
+		else if (hash == 1311061115) // Markoss
+		{
+			role = "Yharim";
+			color = SColor(0xffffbf00);
+		}
+		else if (hash == -1343008305) //cbryant21 (Mason)
+		{
+			role = "Mason";
+			color = SColor(0xffffbf00);
+		}
+		else if (hash == -1659763952) //5elfless (why not)
+		{
+			role = "Hiro";
+			color = SColor(0xff8fce00);
+		}
 
 		GUI::DrawText("" + username, Vec2f(bottomright.x - 470, topleft.y), namecolour);
 		GUI::DrawText("" + ping_in_ms, Vec2f(bottomright.x - 330, topleft.y), SColor(0xffffffff));
-		GUI::DrawText("" + p.getKills(), Vec2f(bottomright.x - 260, topleft.y), SColor(0xffffffff));
-		GUI::DrawText("" + p.getDeaths(), Vec2f(bottomright.x - 190, topleft.y), SColor(0xffffffff));
+		GUI::DrawText("" + p.getKills() + "|" + p.getDeaths(), Vec2f(bottomright.x - 260, topleft.y), SColor(0xffffffff));
+		GUI::DrawText("" + role, Vec2f(bottomright.x - 190, topleft.y), color);
 		GUI::DrawText("" + p.getCoins(), Vec2f(bottomright.x - 50, topleft.y), SColor(0xffffffff));
 		GUI::DrawButton(Vec2f(10, 10), Vec2f(10, 10));
 	}

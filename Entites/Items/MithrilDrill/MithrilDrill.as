@@ -29,7 +29,7 @@ const f32 heat_reduction_water = 0.5f;
 const u8 heat_cooldown_time = 8;
 const u8 heat_cooldown_time_water = u8(heat_cooldown_time / 3);
 
-const f32 max_heatbar_view_range = 65;
+const f32 max_heatbar_view_range = 139;
 
 const bool show_heatbar_when_idle = false;
 
