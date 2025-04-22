@@ -120,6 +120,10 @@ int LoadCustomHead(CSprite@ this)
 		{
 			return 100;
 		}
+		else if (player.getUsername() == "loku") //Loku head
+		{
+			return 101;
+		}
 	}
 
 	return 255;
