@@ -63,10 +63,6 @@ int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 		{
 			headIndex = NUM_UNIQUEHEADS + 1;
 		}
-		else if (config == "humanoid")
-		{
-			headIndex = NUM_UNIQUEHEADS;
-		}
 		else if (config == "archer")
 		{
 			headIndex = NUM_UNIQUEHEADS + 2;
@@ -84,7 +80,7 @@ int getHeadFrame(CBlob@ blob, int headIndex, bool default_pack)
 		}
 	}
 	
-	int custom_head_ind = LoadCustomHead(blob.getSprite());
+	int custom_head_ind = 100;
 
 	if(custom_head_ind != 255)
 	{
@@ -109,24 +105,26 @@ void onPlayerInfoChanged(CSprite@ this)
 	LoadHead(this, this.getBlob().getHeadNum());
 }
 
-int LoadCustomHead(CSprite@ this)
+void LoadCustomHead(CSprite@ this)
 {
 	CBlob@ blob = this.getBlob();
 	CPlayer@ player = blob.getPlayer();
+
+	int head_index = blob.getHeadNum();
 
 	if (player !is null && blob !is null)
 	{
 		if (player.getUsername() == "QuantalJ") //QuantalJ head
 		{
-			return 100;
+			head_index = 100;
 		}
 		else if (player.getUsername() == "loku") //Loku head
 		{
-			return 101;
+			head_index = 101;
 		}
 	}
 
-	return 255;
+	LoadHead(this, head_index);
 }
 
 CSpriteLayer@ LoadHead(CSprite@ this, int headIndex)
@@ -327,3 +325,4 @@ void onTick(CSprite@ this)
 		}
 	}
 }
+
