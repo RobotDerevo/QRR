@@ -11,9 +11,9 @@ u8 getHealingAmount(CBlob@ food)
 		return 0;
 	}
 
-	if (food.getName() == "heart")	    // HACK
+	if (food.getName() == "apple" || food.getName() == "orange")
 	{
-		return 4; // 1 heart
+		return 16; // 4 hearts
 	}
 
 	return 255; // full healing
@@ -36,24 +36,6 @@ void Heal(CBlob@ this, CBlob@ food)
 			f32 oldHealth = this.getHealth();
 			this.server_Heal(f32(heal_amount) * 0.25f);
 			this.add_f32("heal amount", this.getHealth() - oldHealth);
-		}
-
-		//give coins for healing teammate
-		if (food.exists("healer"))
-		{
-			CPlayer@ player = this.getPlayer();
-			u16 healerID = food.get_u16("healer");
-			CPlayer@ healer = getPlayerByNetworkId(healerID);
-			if (player !is null && healer !is null)
-			{
-				bool healerHealed = healer is player;
-				bool sameTeam = healer.getTeamNum() == player.getTeamNum();
-				if (!healerHealed && sameTeam)
-				{
-					int coins = 10;
-					healer.server_setCoins(healer.getCoins() + coins);
-				}
-			}
 		}
 
 		this.Sync("heal amount", true);
